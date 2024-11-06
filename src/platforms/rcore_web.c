@@ -390,12 +390,14 @@ void SetWindowState(unsigned int flags)
         else ToggleFullscreen();
     }
 
+    #ifndef PLATFORM_WEB
     // State change: FLAG_WINDOW_RESIZABLE
     if (((CORE.Window.flags & FLAG_WINDOW_RESIZABLE) != (flags & FLAG_WINDOW_RESIZABLE)) && ((flags & FLAG_WINDOW_RESIZABLE) > 0))
     {
         glfwSetWindowAttrib(platform.handle, GLFW_RESIZABLE, GLFW_TRUE);
         CORE.Window.flags |= FLAG_WINDOW_RESIZABLE;
     }
+    #endif
 
     // State change: FLAG_WINDOW_UNDECORATED
     if ((flags & FLAG_WINDOW_UNDECORATED) > 0)
@@ -525,12 +527,14 @@ void ClearWindowState(unsigned int flags)
         CORE.Window.flags &= ~FLAG_FULLSCREEN_MODE;
     }
 
-    // State change: FLAG_WINDOW_RESIZABLE
-    if (((CORE.Window.flags & FLAG_WINDOW_RESIZABLE) > 0) && ((flags & FLAG_WINDOW_RESIZABLE) > 0))
-    {
-        glfwSetWindowAttrib(platform.handle, GLFW_RESIZABLE, GLFW_FALSE);
-        CORE.Window.flags &= ~FLAG_WINDOW_RESIZABLE;
-    }
+    #ifndef PLATFORM_WEB
+        // State change: FLAG_WINDOW_RESIZABLE
+        if (((CORE.Window.flags & FLAG_WINDOW_RESIZABLE) > 0) && ((flags & FLAG_WINDOW_RESIZABLE) > 0))
+        {
+            glfwSetWindowAttrib(platform.handle, GLFW_RESIZABLE, GLFW_FALSE);
+            CORE.Window.flags &= ~FLAG_WINDOW_RESIZABLE;
+        }
+    #endif
 
     // State change: FLAG_WINDOW_HIDDEN
     if ((flags & FLAG_WINDOW_HIDDEN) > 0)
@@ -1271,10 +1275,12 @@ int InitPlatform(void)
     glfwSetWindowFocusCallback(platform.handle, WindowFocusCallback);
     glfwSetDropCallback(platform.handle, WindowDropCallback);
 
+    #ifndef PLATFORM_WEB
     if ((CORE.Window.flags & FLAG_WINDOW_HIGHDPI) > 0)
     {
        glfwSetWindowContentScaleCallback(platform.handle, WindowContentScaleCallback);
     }
+    #endif
 
     // Set input callback events
     glfwSetKeyCallback(platform.handle, KeyCallback);
